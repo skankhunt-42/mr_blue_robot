@@ -93,11 +93,15 @@ def main():
     running = True
     while running:
         if os.path.isfile(code_file_full_path):
+            print("Executing [%s]..." % (code_file_full_path))
+            time.sleep(2)
             execute_xml_code(code_file_full_path)
             time.sleep(1)
             os.remove(code_file_full_path)
+            print("Done with executing [%s]." % (code_file_full_path))
         if os.path.isfile(stop_file):
             running = False
+        time.sleep(1)
 
     print ("Done!")
 

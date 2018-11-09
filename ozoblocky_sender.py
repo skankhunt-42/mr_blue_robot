@@ -51,11 +51,13 @@ def main():
             ftp_client.put(src_file, dst_file)
             ftp_client.close()
             time.sleep(3)
-            print("Code sent. Deleting [%s]." % (src_file))
+            print("Code sent. Deleting [%s]..." % (src_file))
             os.remove(src_file)
 
         if os.path.isfile(stop_file):
             running = False
+
+        time.sleep(1)
 
     print ("Done!")
 
