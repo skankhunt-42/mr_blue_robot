@@ -71,8 +71,12 @@ def turn_right(degree = 90.0):
     time.sleep(2)
 
 
-def move_block():
-    move_forward(0.28)
+def move_block(blocks=1):
+    block_size_meters = 0.28
+    if blocks > 0:
+        move_forward(block_size_meters * blocks)
+    else:
+        move_back(block_size_meters * (blocks * -1))
 
 
 def spin_360():
@@ -110,5 +114,5 @@ def run_blocks():
     turn_right()
 
 
-run_blocks()
+#run_blocks()
 
