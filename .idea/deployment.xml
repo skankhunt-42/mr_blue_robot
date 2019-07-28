@@ -5,7 +5,7 @@
       <paths name="root@beaglebone.local:22">
         <serverdata>
           <mappings>
-            <mapping deploy="/root/pycharm/remote_debug" local="$PROJECT_DIR$" />
+            <mapping deploy="/tmp/pycharm_project_472" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
