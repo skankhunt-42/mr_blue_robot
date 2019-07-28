@@ -7,6 +7,7 @@ from rcpy.gpio import InputEvent
 import Adafruit_BBIO.GPIO as GPIO
 
 import time
+import random
 
 GPIO.cleanup()
 
@@ -43,24 +44,6 @@ GPIO.output(trigger, False)
 time.sleep(0.5)
 TRIG = trigger
 
-
-def distanceMeasurement(TRIG,ECHO):
-    GPIO.output(TRIG, True)
-    time.sleep(0.00001)
-    GPIO.output(TRIG, False)
-    pulseStart = time.time()
-    pulseEnd = time.time()
-    counter = 0
-    while GPIO.input(ECHO) == 0:
-        pulseStart = time.time()
-        counter += 1
-    while GPIO.input(ECHO) == 1:
-        pulseEnd = time.time()
-
-    pulseDuration = pulseEnd - pulseStart
-    distance = pulseDuration * 17150
-    distance = round(distance, 2)
-    return distance
 
 
 #
@@ -153,11 +136,7 @@ def distanceMeasurement(TRIG,ECHO):
 #     return distance
 #
 
-for i in range(0,10):
-    #d = read_distance()
-    d = distanceMeasurement(trigger, echo)
-    print("Distance: [{}]".format(d))
-    time.sleep(1)
+
 
 #
 # for i in range(0,10)
@@ -222,35 +201,42 @@ clckv.start()
 #     time.sleep(2)
 
 
-
-
-def distanceMeasurement():
-    # GPIO.output(TRIG, True)
-    trigger.set(rcpy.gpio.HIGH)
-
+def distanceMeasurement(TRIG,ECHO):
+    GPIO.output(TRIG, True)
     time.sleep(0.00001)
-    # GPIO.output(TRIG, False)
-    trigger.set(rcpy.gpio.LOW)
-
+    GPIO.output(TRIG, False)
     pulseStart = time.time()
     pulseEnd = time.time()
     counter = 0
-    # while GPIO.input(ECHO) == 0:
-    while echo.is_low():
+    while GPIO.input(ECHO) == 0:
         pulseStart = time.time()
         counter += 1
-        if counter > 300:
-            break
-    while echo.is_high():
+    while GPIO.input(ECHO) == 1:
         pulseEnd = time.time()
-        if counter > 300:
-            break
 
     pulseDuration = pulseEnd - pulseStart
     distance = pulseDuration * 17150
     distance = round(distance, 2)
     return distance
 
+
+def look_back():
+    print("look_back()")
+    servo_vert.set(-1.5)
+    time.sleep(0.2)
+
+
+def look_angle(angle=90):
+    print("look_angle({})".format(angle))
+    time.sleep(0.2)
+    if angle > 0 and angle > 90:
+        angle = 90
+    if angle < 0 and angle < -90:
+        angle = -90
+    position = angle * 0.015
+    servo_hor.set(position)
+    servo_vert.set(0)
+    time.sleep(0.2)
 
 def say_yes():
     print("say_yes()")
@@ -268,6 +254,8 @@ def say_yes():
 
 def say_no():
     print("say_no()")
+    servo_vert.set(0)
+    time.sleep(0.2)
     servo_hor.set(0)
     time.sleep(0.4)
     servo_hor.set(1.5)
@@ -293,22 +281,28 @@ def move_straight(blocks):
     motor2.set(0)
 
 
-def turn_right():
-    print("turn_right()")
+def turn_right(angle=90):
+    look_angle(angle* -1)
+    print("turn_right()".format(angle))
     motor1.set(duty)
-    time.sleep(0.7)
+    time.sleep(0.0077777 * angle)
     motor1.set(0)
 
 
-def turn_left():
-    print("turn_left()")
+def turn_left(angle=90):
+    look_angle(angle)
+    print("turn_left({})".format(angle))
     motor2.set(duty)
-    time.sleep(0.7)
+    time.sleep(0.0077777 * angle)
     motor2.set(0)
 
 
 def forward(blocks=1):
     print("forward({})".format(blocks))
+    if blocks > 0:
+        look_angle(0)
+    else:
+        look_back()
     return move_straight(blocks)
 
 
@@ -317,13 +311,112 @@ def backward(blocks=1):
     return forward(-blocks)
 
 
+def random_move(force=False):
+    rand = random.randint(0, 100)
+    if force or rand < 25:
+        rand = random.randint(15, 180)
+        print("random_move({}) step1".format(str(rand)))
+        look_back()
+        left = bool(random.getrandbits(1))
+        if left:
+            turn_left(rand)
+        else:
+            turn_right(rand)
+        backward()
+        print("random_move({}) step2".format(str(rand)))
+        left = not left
+        if left:
+            turn_left(rand)
+        else:
+            turn_right(rand)
+
+
 print("Init")
 
-#distanceMeasurement()
+recoveredDIstance = distanceMeasurement(trigger,echo)
+while True:
+    if recoveredDIstance <= 0 or recoveredDIstance > 400:
+        recoveredDIstance = 1.111
+    while recoveredDIstance > 80.0:
+        print("Distance: [{}] cm. Clear path!".format((str(recoveredDIstance))))
+        say_yes()
+        forward()
+        time.sleep(1)
+        recoveredDIstance = distanceMeasurement(trigger, echo)
+        if recoveredDIstance <= 0 or recoveredDIstance > 400:
+            recoveredDIstance = 1.111
+        random_move()
+    # Found obstacle
+    print("Distance: [{}] cm. Dead end!".format(str(recoveredDIstance)))
+    say_no()
+    backward(0.5)
+    #left = bool(random.getrandbits(1))
+    rand = random.randint(0,100)
+    print("rand: [{}]".format(str(rand)))
+    if rand >= 0 and rand < 40:
+        turn_left()
+    if rand >= 40 and rand < 80:
+        turn_right()
+    if rand >= 80:
+        random_move(force=True)
+    recoveredDIstance = distanceMeasurement(trigger, echo)
 
-# say_yes()
-# time.sleep(1)
-# say_no()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+for i in range(0,5):
+    d = distanceMeasurement(trigger, echo)
+    print("Distance: [{}]".format(d))
+    time.sleep(1)
+
+say_yes()
+time.sleep(1)
+say_no()
+
+
+forward()
+forward()
+forward()
+for i in range(0,5):
+    d = distanceMeasurement(trigger, echo)
+    print("Distance: [{}]".format(d))
+    time.sleep(1)
+turn_left()
+forward()
+say_yes()
+time.sleep(1)
+say_no()
+turn_left()
+forward()
+forward()
+forward()
+for i in range(0,5):
+    d = distanceMeasurement(trigger, echo)
+    print("Distance: [{}]".format(d))
+    time.sleep(1)
+turn_left()
+forward()
+turn_left()
+
+say_yes()
+
 #
 # say_yes()
 # time.sleep(1)
