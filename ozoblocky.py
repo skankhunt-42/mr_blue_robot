@@ -1,11 +1,17 @@
 import os
 import time
 import rc_balance_dstr
+import blupants_car
 from xml.dom import minidom
+
+
+global robot_id
+robot_id = 0  # mr_blupants / eduMIP
+robot_id = 1  # blupants_car
 
 #https://ozoblockly.com
 global code_file
-code_file = "ozoBlocklyProgram.ozocode"
+code_file = "bbb.ozocode"
 
 global var_dir
 var_dir = os.path.join(os.sep, "var", "lib", "cloud9", "BBBlue_DSTR")
@@ -41,11 +47,18 @@ def execute_xml_code(xml):
                     if cmd_field[1] == "forward":
                         # ozobot_newbie_movement_forward_1_step
                         step = int(cmd_field[2])
-                        rc_balance_dstr.move_block(step)
+                        if robot_id == 0:
+                            rc_balance_dstr.move_block(step)
+                        if robot_id == 1:
+                            blupants_car.forward(step)
                     if cmd_field[1] == "backward":
                         # ozobot_newbie_movement_backward_1_step
-                        step = int(cmd_field[2]) * -1
-                        rc_balance_dstr.move_block(step)
+                        if robot_id == 0:
+                            step = int(cmd_field[2]) * -1
+                            rc_balance_dstr.move_block(step)
+                        if robot_id == 1:
+                            step = int(cmd_field[2])
+                            blupants_car.backward(step)
                     if cmd_field[1] == "speed":
                         step = 0
                         if cmd_field[2] == "medium":
@@ -54,31 +67,52 @@ def execute_xml_code(xml):
                         if cmd_field[2] == "very":
                             # ozobot_newbie_movement_speed_very_fast
                             step = 5
-                        rc_balance_dstr.move_block(step)
+                        if robot_id == 0:
+                            rc_balance_dstr.move_block(step)
+                        if robot_id == 1:
+                            blupants_car.forward(step)
                     if cmd_field[1] == "turn":
                         if cmd_field[2] == "left":
                             # ozobot_newbie_movement_turn_left
-                            rc_balance_dstr.turn_left(90.0)
+                            if robot_id == 0:
+                                rc_balance_dstr.turn_left(90.0)
+                            if robot_id == 1:
+                                blupants_car.turn_left(90.0)
                         if cmd_field[2] == "right":
                             # ozobot_newbie_movement_turn_right
-                            rc_balance_dstr.turn_right(90.0)
+                            if robot_id == 0:
+                                rc_balance_dstr.turn_right(90.0)
+                            if robot_id == 1:
+                                blupants_car.turn_right(90.0)
 
                         if cmd_field[2] == "slight" and len(cmd_field) > 3:
                             if cmd_field[3] == "left":
                                 # ozobot_newbie_movement_turn_slight_left
-                                rc_balance_dstr.turn_left(45.0)
+                                if robot_id == 0:
+                                    rc_balance_dstr.turn_left(45.0)
+                                if robot_id == 1:
+                                    blupants_car.turn_left(45.0)
                             if cmd_field[3] == "right":
                                 # ozobot_newbie_movement_turn_slight_right
-                                rc_balance_dstr.turn_right(45.0)
+                                if robot_id == 0:
+                                    rc_balance_dstr.turn_right(45.0)
+                                if robot_id == 1:
+                                    blupants_car.turn_right(45.0)
 
                     if cmd_field[1] == "u":
                         if cmd_field[2] == "turn" and len(cmd_field) > 3:
                             if cmd_field[3] == "left":
                                 # ozobot_newbie_movement_u_turn_left
-                                rc_balance_dstr.turn_left(180.0)
+                                if robot_id == 0:
+                                    rc_balance_dstr.turn_left(180.0)
+                                if robot_id == 1:
+                                    blupants_car.turn_left(180.0)
                             if cmd_field[3] == "right":
                                 # ozobot_newbie_movement_u_turn_right
-                                rc_balance_dstr.turn_right(180.0)
+                                if robot_id == 0:
+                                    rc_balance_dstr.turn_right(180.0)
+                                if robot_id == 1:
+                                    blupants_car.turn_right(180.0)
 
 
 def main():

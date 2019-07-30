@@ -266,7 +266,7 @@ def say_no():
     time.sleep(0.2)
 
 
-def move_straight(blocks):
+def move_block(blocks):
     d = duty
     if blocks < 0:
         d = d * -1
@@ -303,7 +303,7 @@ def forward(blocks=1):
         look_angle(0)
     else:
         look_back()
-    return move_straight(blocks)
+    return move_block(blocks)
 
 
 def backward(blocks=1):
@@ -331,133 +331,119 @@ def random_move(force=False):
             turn_right(rand)
 
 
-print("Init")
+def main():
+    print("Init")
 
-recoveredDIstance = distanceMeasurement(trigger,echo)
-while True:
-    if recoveredDIstance <= 0 or recoveredDIstance > 400:
-        recoveredDIstance = 1.111
-    while recoveredDIstance > 80.0:
-        print("Distance: [{}] cm. Clear path!".format((str(recoveredDIstance))))
-        say_yes()
-        forward()
-        time.sleep(1)
-        recoveredDIstance = distanceMeasurement(trigger, echo)
+    recoveredDIstance = distanceMeasurement(trigger,echo)
+    while True:
         if recoveredDIstance <= 0 or recoveredDIstance > 400:
             recoveredDIstance = 1.111
-        random_move()
-    # Found obstacle
-    print("Distance: [{}] cm. Dead end!".format(str(recoveredDIstance)))
+        while recoveredDIstance > 80.0:
+            print("Distance: [{}] cm. Clear path!".format((str(recoveredDIstance))))
+            say_yes()
+            forward()
+            time.sleep(1)
+            recoveredDIstance = distanceMeasurement(trigger, echo)
+            if recoveredDIstance <= 0 or recoveredDIstance > 400:
+                recoveredDIstance = 1.111
+            random_move()
+        # Found obstacle
+        print("Distance: [{}] cm. Dead end!".format(str(recoveredDIstance)))
+        say_no()
+        backward(0.5)
+        #left = bool(random.getrandbits(1))
+        rand = random.randint(0,100)
+        print("rand: [{}]".format(str(rand)))
+        if rand >= 0 and rand < 40:
+            turn_left()
+        if rand >= 40 and rand < 80:
+            turn_right()
+        if rand >= 80:
+            random_move(force=True)
+        recoveredDIstance = distanceMeasurement(trigger, echo)
+
+
+
+
+
+
+    for i in range(0,5):
+        d = distanceMeasurement(trigger, echo)
+        print("Distance: [{}]".format(d))
+        time.sleep(1)
+
+    say_yes()
+    time.sleep(1)
     say_no()
-    backward(0.5)
-    #left = bool(random.getrandbits(1))
-    rand = random.randint(0,100)
-    print("rand: [{}]".format(str(rand)))
-    if rand >= 0 and rand < 40:
-        turn_left()
-    if rand >= 40 and rand < 80:
-        turn_right()
-    if rand >= 80:
-        random_move(force=True)
-    recoveredDIstance = distanceMeasurement(trigger, echo)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-for i in range(0,5):
-    d = distanceMeasurement(trigger, echo)
-    print("Distance: [{}]".format(d))
+    forward()
+    forward()
+    forward()
+    for i in range(0,5):
+        d = distanceMeasurement(trigger, echo)
+        print("Distance: [{}]".format(d))
+        time.sleep(1)
+    turn_left()
+    forward()
+    say_yes()
     time.sleep(1)
+    say_no()
+    turn_left()
+    forward()
+    forward()
+    forward()
+    for i in range(0,5):
+        d = distanceMeasurement(trigger, echo)
+        print("Distance: [{}]".format(d))
+        time.sleep(1)
+    turn_left()
+    forward()
+    turn_left()
 
-say_yes()
-time.sleep(1)
-say_no()
+    say_yes()
 
+    #
+    # say_yes()
+    # time.sleep(1)
+    # say_no()
+    #
+    # say_yes()
+    # time.sleep(1)
+    # say_no()
 
-forward()
-forward()
-forward()
-for i in range(0,5):
-    d = distanceMeasurement(trigger, echo)
-    print("Distance: [{}]".format(d))
-    time.sleep(1)
-turn_left()
-forward()
-say_yes()
-time.sleep(1)
-say_no()
-turn_left()
-forward()
-forward()
-forward()
-for i in range(0,5):
-    d = distanceMeasurement(trigger, echo)
-    print("Distance: [{}]".format(d))
-    time.sleep(1)
-turn_left()
-forward()
-turn_left()
-
-say_yes()
-
-#
-# say_yes()
-# time.sleep(1)
-# say_no()
-#
-# say_yes()
-# time.sleep(1)
-# say_no()
-
-# forward()
-# forward()
-# forward()
-# turn_left()
-# forward()
-# turn_left()
-# forward()
-# forward()
-# forward()
-# turn_left()
-# forward()
-# turn_left()
+    # forward()
+    # forward()
+    # forward()
+    # turn_left()
+    # forward()
+    # turn_left()
+    # forward()
+    # forward()
+    # forward()
+    # turn_left()
+    # forward()
+    # turn_left()
 
 
-# forward()
-# forward()
-# forward()
-# turn_right()
-# forward()
-# turn_right()
-# forward()
-# forward()
-# forward()
-# turn_right()
-# forward()
-# turn_right()
+    # forward()
+    # forward()
+    # forward()
+    # turn_right()
+    # forward()
+    # turn_right()
+    # forward()
+    # forward()
+    # forward()
+    # turn_right()
+    # forward()
+    # turn_right()
 
 
-# stop clock
-clckh.stop()
-clckv.stop()
+    # stop clock
+    clckh.stop()
+    clckv.stop()
 
-# disable servos
-servo.disable()
-print("Done")
+    # disable servos
+    servo.disable()
+    print("Done")
