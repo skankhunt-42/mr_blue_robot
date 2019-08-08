@@ -26,7 +26,7 @@ def execute_python_code(py):
                 rc_balance_dstr.move_block(step)
             if robot_id == 1:
                 blupants_car.forward(step)
-        if s == "move_backward()":
+        if s == "move_backwards()":
             if robot_id == 0:
                 rc_balance_dstr.move_block(step)
             if robot_id == 1:
