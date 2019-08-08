@@ -1,6 +1,7 @@
 import os
 import time
 import requests
+import socket
 import rc_balance_dstr
 import blupants_car
 
@@ -69,7 +70,16 @@ def execute_python_code(py):
 
 
 def get_local_ip():
-    return "10.0.0.23"
+    local_ip = ""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("10.255.255.255", 1))
+        local_ip = s.getsockname()[0]
+    except:
+        local_ip = "127.0.0.1"
+    finally:
+        s.close()
+    return local_ip
 
 
 def get_code():
