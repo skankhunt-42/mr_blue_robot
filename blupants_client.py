@@ -10,7 +10,7 @@ studio_url = "http://flask-env.6xabhva87h.us-east-2.elasticbeanstalk.com"
 
 global robot_id
 robot_id = 0  # mr_blupants / eduMIP
-robot_id = 1  # blupants_car
+#robot_id = 1  # blupants_car
 
 global step
 step = 1
@@ -28,7 +28,7 @@ def execute_python_code(py):
                 blupants_car.forward(step)
         if s == "move_backwards":
             if robot_id == 0:
-                rc_balance_dstr.move_block(step)
+                rc_balance_dstr.move_block(step*-1)
             if robot_id == 1:
                 blupants_car.backward(step)
         if s == "speed_up()":
